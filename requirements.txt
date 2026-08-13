@@ -4,3 +4,4 @@ networkx
 matplotlib
 requests
 python-dotenv
+huggingface_hub
