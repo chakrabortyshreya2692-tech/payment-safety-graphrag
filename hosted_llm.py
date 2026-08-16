@@ -86,11 +86,6 @@ class HostedLLM:
 
             "temperature": final_temperature,
 
-            # Keep reasoning small because this application
-            # is performing grounded explanation, not
-            # complex open-ended reasoning.
-            "reasoning": {
-                "effort": "False"
             },
         }
 
