@@ -707,25 +707,25 @@ if submitted:
                     )
                 )
 
-          fallback_used = True
+            fallback_used = True
 
-          # Temporary debugging information
-          st.warning(
-         "The LLM generated a response, but it did not "
-         "pass the evidence validation check."
-         )
+           # Temporary debugging information
+           st.warning(
+             "The LLM generated a response, but it did not "
+             "pass the evidence validation check."
+           )
 
-         st.write("### Validation problems")
+           st.write("### Validation problems")
 
-         st.json(
-         validation
-         ) 
+           st.json(
+              validation
+           ) 
 
-         st.write("### Raw LLM response")
+           st.write("### Raw LLM response")
 
-         st.code(
-         raw_guidance
-         )
+           st.code(
+             raw_guidance
+           )
 
 
         except Exception as e:
