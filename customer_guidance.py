@@ -74,7 +74,7 @@ Recommended next action:
     return llm.generate(
         prompt=prompt,
         system_prompt=CUSTOMER_SYSTEM_PROMPT,
-        max_new_tokens=700,
+        max_new_tokens=1200,
         temperature=0.0,
     )
 
@@ -327,6 +327,6 @@ Answer using only the approved evidence.
         prompt=prompt,
         system_prompt=
             CUSTOMER_CHAT_SYSTEM_PROMPT,
-        max_new_tokens=600,
+        max_new_tokens=900,
         temperature=0.0,
     )
