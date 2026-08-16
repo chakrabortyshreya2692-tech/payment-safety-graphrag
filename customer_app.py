@@ -715,29 +715,29 @@ if submitted:
 
         except Exception as e:
 
-    final_guidance = (
-        deterministic_customer_audience_fallback(
-            risk_result
-        )
-    )
+            final_guidance = (
+                deterministic_customer_audience_fallback(
+                    risk_result
+                )
+            )
 
-    raw_guidance = None
+            raw_guidance = None
 
-    validation = {
-        "accepted": False,
-        "reason": str(e),
-    }
+            validation = {
+                "accepted": False,
+                "reason": str(e),
+            }
 
-    fallback_used = True
+            fallback_used = True
 
-    st.warning(
-        "The conversational model was unavailable. "
-        "Deterministic fraud-prevention guidance "
-        "has been shown instead."
-    )
+            st.warning(
+                "The conversational model was unavailable. "
+                "Deterministic fraud-prevention guidance "
+                "has been shown instead."
+            )
 
-    st.error("LLM error:")
-    st.exception(e)
+            st.error("LLM error:")
+            st.exception(e)
 
 
         # -------------------------------------------------
