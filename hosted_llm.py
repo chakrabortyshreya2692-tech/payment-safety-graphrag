@@ -34,6 +34,10 @@ class HostedLLM:
             "Content-Type": "application/json",
         }
 
+        # ==============================================
+        # Build messages
+        # ==============================================
+
         messages = []
 
         if system_prompt:
@@ -70,31 +74,93 @@ class HostedLLM:
             "temperature": final_temperature,
         }
 
-        response = requests.post(
-            self.endpoint_url,
-            headers=headers,
-            json=payload,
-            timeout=120,
-        )
-
-        response.raise_for_status()
-
-        result = response.json()
+        # ==============================================
+        # Send request
+        # ==============================================
 
         try:
-            return (
-                result["choices"][0]
-                ["message"]["content"]
-                .strip()
+
+            response = requests.post(
+                self.endpoint_url,
+                headers=headers,
+                json=payload,
+                timeout=120,
             )
 
-        except (
-            KeyError,
-            IndexError,
-            TypeError,
+            response.raise_for_status()
+
+        except requests.exceptions.RequestException as e:
+
+            raise RuntimeError(
+                f"OpenRouter request failed: {e}"
+            ) from e
+
+        # ==============================================
+        # Parse JSON
+        # ==============================================
+
+        try:
+
+            result = response.json()
+
+        except ValueError as e:
+
+            raise RuntimeError(
+                "OpenRouter returned invalid JSON: "
+                f"{response.text}"
+            ) from e
+
+        # ==============================================
+        # Validate response
+        # ==============================================
+
+        if (
+            "choices" not in result
+            or not result["choices"]
         ):
 
             raise RuntimeError(
-                "Unexpected response from hosted LLM: "
-                f"{result}"
+                "OpenRouter returned no choices. "
+                f"Full response: {result}"
             )
+
+        message = (
+            result["choices"][0]
+            .get("message", {})
+        )
+
+        content = message.get(
+            "content"
+        )
+
+        # ==============================================
+        # Handle None/empty responses
+        # ==============================================
+
+        if content is None:
+
+            raise RuntimeError(
+                "OpenRouter returned content=None. "
+                f"Full response: {result}"
+            )
+
+        if not isinstance(
+            content,
+            str,
+        ):
+
+            raise RuntimeError(
+                "OpenRouter returned non-text content. "
+                f"Full response: {result}"
+            )
+
+        content = content.strip()
+
+        if not content:
+
+            raise RuntimeError(
+                "OpenRouter returned an empty response. "
+                f"Full response: {result}"
+            )
+
+        return content
