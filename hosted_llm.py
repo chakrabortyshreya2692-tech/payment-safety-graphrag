@@ -20,7 +20,7 @@ class HostedLLM:
     def __init__(
         self,
         api_token: str,
-        model: str = "openrouter/free",
+        model: str = "openai/gpt-oss-20b:free",
         max_new_tokens: int = 1200,
         temperature: float = 0.0,
         timeout: int = 120,
