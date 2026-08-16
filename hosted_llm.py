@@ -90,7 +90,7 @@ class HostedLLM:
             # is performing grounded explanation, not
             # complex open-ended reasoning.
             "reasoning": {
-                "effort": "low"
+                "effort": "False"
             },
         }
 
