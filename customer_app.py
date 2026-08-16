@@ -691,26 +691,41 @@ if submitted:
             # Use LLM result or deterministic fallback
             # ---------------------------------------------
 
-            if validation.get(
-                "accepted",
-                False,
-            ):
+          if validation.get(
+    "accepted",
+    False,
+):
 
-                final_guidance = (
-                    raw_guidance
-                )
+    final_guidance = raw_guidance
+    fallback_used = False
 
-                fallback_used = False
+else:
 
-            else:
+    final_guidance = (
+        deterministic_customer_audience_fallback(
+            risk_result
+        )
+    )
 
-                final_guidance = (
-                    deterministic_customer_audience_fallback(
-                        risk_result
-                    )
-                )
+    fallback_used = True
 
-                fallback_used = True
+    # Temporary debugging information
+    st.warning(
+        "The LLM generated a response, but it did not "
+        "pass the evidence validation check."
+    )
+
+    st.write("### Validation problems")
+
+    st.json(
+        validation
+    )
+
+    st.write("### Raw LLM response")
+
+    st.code(
+        raw_guidance
+    )
 
 
         except Exception as e:
