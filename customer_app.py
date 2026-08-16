@@ -384,7 +384,7 @@ if (
                         ]
                     ),
                     model="openrouter/free",
-                    max_new_tokens=300,
+                    max_new_tokens=700,
                     temperature=0.0,
                 )
             )
