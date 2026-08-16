@@ -1175,15 +1175,15 @@ else:
 
             except Exception as e:
 
-    st.error("Conversational LLM error:")
-    st.exception(e)
+                st.error("Conversational LLM error:")
+                st.exception(e)
 
-    response = (
-        "I could not generate a conversational "
-        "response at this time. Please review "
-        "the deterministic risk assessment and "
-        "GraphRAG evidence shown above."
-    )
+                response = (
+                    "I could not generate a conversational "
+                    "response at this time. Please review "
+                    "the deterministic risk assessment and "
+                    "GraphRAG evidence shown above."
+                )
 
         st.session_state.messages.append(
             {
