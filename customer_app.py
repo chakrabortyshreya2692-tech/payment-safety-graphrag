@@ -38,9 +38,7 @@ from customer_guidance import (
     generate_customer_graphrag_answer,
 )
 
-from hosted_llm import (
-    HostedLLM,
-)
+from hosted_llm import HostedLLM
 
 
 # =========================================================
@@ -384,7 +382,7 @@ if (
                         ]
                     ),
                     model="openrouter/free",
-                    max_new_tokens=700,
+                    max_new_tokens=1200,
                     temperature=0.0,
                 )
             )
@@ -696,7 +694,10 @@ if submitted:
                 False,
             ):
 
-                final_guidance = raw_guidance
+                final_guidance = (
+                    raw_guidance
+                )
+
                 fallback_used = False
 
             else:
@@ -707,28 +708,14 @@ if submitted:
                     )
                 )
 
-            fallback_used = True
-
-           # Temporary debugging information
-            st.warning(
-             "The LLM generated a response, but it did not "
-             "pass the evidence validation check."
-            )
-
-            st.write("### Validation problems")
-
-            st.json(
-              validation
-            ) 
-
-            st.write("### Raw LLM response")
-
-            st.code(
-             raw_guidance
-            )
+                fallback_used = True
 
 
         except Exception as e:
+
+            # If hosted LLM fails,
+            # preserve fraud assessment
+            # and show deterministic guidance.
 
             final_guidance = (
                 deterministic_customer_audience_fallback(
@@ -740,7 +727,8 @@ if submitted:
 
             validation = {
                 "accepted": False,
-                "reason": str(e),
+                "reason":
+                    "LLM generation unavailable",
             }
 
             fallback_used = True
@@ -751,8 +739,8 @@ if submitted:
                 "has been shown instead."
             )
 
-            st.error("LLM error:")
-            st.exception(e)
+            with st.expander("LLM diagnostic details"):
+                st.code(str(e))
 
 
         # -------------------------------------------------
@@ -1190,15 +1178,18 @@ else:
 
             except Exception as e:
 
-                st.error("Conversational LLM error:")
-                st.exception(e)
-
                 response = (
                     "I could not generate a conversational "
                     "response at this time. Please review "
                     "the deterministic risk assessment and "
                     "GraphRAG evidence shown above."
                 )
+
+                with st.expander(
+                    "Conversational LLM diagnostic details"
+                ):
+                    st.code(str(e))
+
 
         st.session_state.messages.append(
             {
