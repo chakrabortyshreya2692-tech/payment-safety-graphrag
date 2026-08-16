@@ -381,7 +381,7 @@ if (
                             "OPENROUTER_API_KEY"
                         ]
                     ),
-                    model="openrouter/free",
+                    model="openai/gpt-oss-20b:free,
                     max_new_tokens=1200,
                     temperature=0.0,
                 )
