@@ -7,10 +7,9 @@ class HostedLLM:
         self,
         api_token,
         model="openrouter/free",
-        max_new_tokens=300,
+        max_new_tokens=700,
         temperature=0.0,
     ):
-
         self.api_token = api_token
         self.model = model
         self.max_new_tokens = max_new_tokens
@@ -20,7 +19,6 @@ class HostedLLM:
             "https://openrouter.ai/api/v1/chat/completions"
         )
 
-
     def generate(
         self,
         prompt,
@@ -29,14 +27,18 @@ class HostedLLM:
         temperature=None,
     ):
 
+        # -------------------------------------------------
+        # Headers
+        # -------------------------------------------------
+
         headers = {
             "Authorization": f"Bearer {self.api_token}",
             "Content-Type": "application/json",
         }
 
-        # ==============================================
+        # -------------------------------------------------
         # Build messages
-        # ==============================================
+        # -------------------------------------------------
 
         messages = []
 
@@ -55,6 +57,10 @@ class HostedLLM:
             }
         )
 
+        # -------------------------------------------------
+        # Request-specific generation settings
+        # -------------------------------------------------
+
         final_max_tokens = (
             max_new_tokens
             if max_new_tokens is not None
@@ -67,19 +73,32 @@ class HostedLLM:
             else self.temperature
         )
 
+        # -------------------------------------------------
+        # OpenRouter request payload
+        # -------------------------------------------------
+
         payload = {
             "model": self.model,
             "messages": messages,
-            "max_tokens": final_max_tokens,
+
+            # Enough output budget for reasoning + answer
+            "max_completion_tokens": final_max_tokens,
+
             "temperature": final_temperature,
+
+            # Keep reasoning small because this application
+            # is performing grounded explanation, not
+            # complex open-ended reasoning.
+            "reasoning": {
+                "effort": "low"
+            },
         }
 
-        # ==============================================
+        # -------------------------------------------------
         # Send request
-        # ==============================================
+        # -------------------------------------------------
 
         try:
-
             response = requests.post(
                 self.endpoint_url,
                 headers=headers,
@@ -90,65 +109,85 @@ class HostedLLM:
             response.raise_for_status()
 
         except requests.exceptions.RequestException as e:
-
             raise RuntimeError(
                 f"OpenRouter request failed: {e}"
             ) from e
 
-        # ==============================================
-        # Parse JSON
-        # ==============================================
+        # -------------------------------------------------
+        # Parse response JSON
+        # -------------------------------------------------
 
         try:
-
             result = response.json()
 
         except ValueError as e:
-
             raise RuntimeError(
-                "OpenRouter returned invalid JSON: "
-                f"{response.text}"
+                "OpenRouter returned invalid JSON. "
+                f"Response body: {response.text}"
             ) from e
 
-        # ==============================================
-        # Validate response
-        # ==============================================
+        # -------------------------------------------------
+        # Check response structure
+        # -------------------------------------------------
 
         if (
             "choices" not in result
             or not result["choices"]
         ):
-
             raise RuntimeError(
                 "OpenRouter returned no choices. "
                 f"Full response: {result}"
             )
 
-        message = (
-            result["choices"][0]
-            .get("message", {})
+        choice = result["choices"][0]
+
+        message = choice.get(
+            "message",
+            {}
+        )
+
+        finish_reason = choice.get(
+            "finish_reason"
         )
 
         content = message.get(
             "content"
         )
 
-        # ==============================================
-        # Handle None/empty responses
-        # ==============================================
+        # -------------------------------------------------
+        # Handle token-limit issue
+        # -------------------------------------------------
+
+        if (
+            finish_reason == "length"
+            and not content
+        ):
+            raise RuntimeError(
+                "The hosted LLM exhausted its completion "
+                "token budget before producing the final "
+                "answer. Increase max_new_tokens or reduce "
+                "reasoning effort."
+            )
+
+        # -------------------------------------------------
+        # Handle missing content
+        # -------------------------------------------------
 
         if content is None:
-
             raise RuntimeError(
-                "OpenRouter returned content=None. "
+                "OpenRouter returned no final text. "
+                f"Finish reason: {finish_reason}. "
                 f"Full response: {result}"
             )
+
+        # -------------------------------------------------
+        # Make sure the content is text
+        # -------------------------------------------------
 
         if not isinstance(
             content,
             str,
         ):
-
             raise RuntimeError(
                 "OpenRouter returned non-text content. "
                 f"Full response: {result}"
@@ -156,11 +195,19 @@ class HostedLLM:
 
         content = content.strip()
 
-        if not content:
+        # -------------------------------------------------
+        # Handle empty response
+        # -------------------------------------------------
 
+        if not content:
             raise RuntimeError(
-                "OpenRouter returned an empty response. "
+                "OpenRouter returned an empty final response. "
+                f"Finish reason: {finish_reason}. "
                 f"Full response: {result}"
             )
+
+        # -------------------------------------------------
+        # Successful response
+        # -------------------------------------------------
 
         return content
