@@ -5,16 +5,20 @@ class HostedLLM:
 
     def __init__(
         self,
-        endpoint_url,
         api_token,
+        model="openrouter/free",
         max_new_tokens=300,
         temperature=0.0,
     ):
 
-        self.endpoint_url = endpoint_url.rstrip("/")
         self.api_token = api_token
+        self.model = model
         self.max_new_tokens = max_new_tokens
         self.temperature = temperature
+
+        self.endpoint_url = (
+            "https://openrouter.ai/api/v1/chat/completions"
+        )
 
 
     def generate(
@@ -22,23 +26,15 @@ class HostedLLM:
         prompt,
     ):
 
-        url = (
-            self.endpoint_url
-            + "/v1/chat/completions"
-        )
-
         headers = {
-            "Authorization":
-                f"Bearer {self.api_token}",
-
-            "Content-Type":
-                "application/json",
+            "Authorization": (
+                f"Bearer {self.api_token}"
+            ),
+            "Content-Type": "application/json",
         }
 
-
         payload = {
-
-            "model": "tgi",
+            "model": self.model,
 
             "messages": [
                 {
@@ -47,30 +43,21 @@ class HostedLLM:
                 }
             ],
 
-            "max_tokens":
-                self.max_new_tokens,
+            "max_tokens": self.max_new_tokens,
 
-            "temperature":
-                self.temperature,
-
-            "stream":
-                False,
+            "temperature": self.temperature,
         }
 
-
         response = requests.post(
-            url,
+            self.endpoint_url,
             headers=headers,
             json=payload,
             timeout=120,
         )
 
-
         response.raise_for_status()
 
-
         result = response.json()
-
 
         try:
 
@@ -87,7 +74,6 @@ class HostedLLM:
         ):
 
             raise RuntimeError(
-                "Unexpected response received "
-                "from hosted LLM endpoint: "
+                "Unexpected response from hosted LLM: "
                 f"{result}"
             )
