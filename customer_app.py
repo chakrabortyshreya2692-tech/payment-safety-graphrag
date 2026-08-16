@@ -378,16 +378,12 @@ if (
 
             st.session_state.hosted_llm = (
                 HostedLLM(
-                    endpoint_url=(
-                        st.secrets[
-                            "HF_ENDPOINT_URL"
-                        ]
-                    ),
                     api_token=(
                         st.secrets[
-                            "HF_TOKEN"
+                            "OPENROUTER_API_KEY"
                         ]
                     ),
+                    model="openrouter/free",
                     max_new_tokens=300,
                     temperature=0.0,
                 )
