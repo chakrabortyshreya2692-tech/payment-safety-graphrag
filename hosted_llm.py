@@ -10,6 +10,7 @@ class HostedLLM:
         max_new_tokens=300,
         temperature=0.0,
     ):
+
         self.api_token = api_token
         self.model = model
         self.max_new_tokens = max_new_tokens
@@ -19,6 +20,7 @@ class HostedLLM:
             "https://openrouter.ai/api/v1/chat/completions"
         )
 
+
     def generate(
         self,
         prompt,
@@ -26,21 +28,11 @@ class HostedLLM:
         max_new_tokens=None,
         temperature=None,
     ):
-        """
-        Generate a response from OpenRouter.
-
-        Parameters may override the defaults configured when
-        HostedLLM is instantiated.
-        """
 
         headers = {
             "Authorization": f"Bearer {self.api_token}",
             "Content-Type": "application/json",
         }
-
-        # -----------------------------------------------
-        # Construct messages
-        # -----------------------------------------------
 
         messages = []
 
@@ -58,10 +50,6 @@ class HostedLLM:
                 "content": prompt,
             }
         )
-
-        # -----------------------------------------------
-        # Allow per-request settings
-        # -----------------------------------------------
 
         final_max_tokens = (
             max_new_tokens
@@ -82,52 +70,31 @@ class HostedLLM:
             "temperature": final_temperature,
         }
 
-        # -----------------------------------------------
-        # Call OpenRouter
-        # -----------------------------------------------
+        response = requests.post(
+            self.endpoint_url,
+            headers=headers,
+            json=payload,
+            timeout=120,
+        )
+
+        response.raise_for_status()
+
+        result = response.json()
 
         try:
-            response = requests.post(
-                self.endpoint_url,
-                headers=headers,
-                json=payload,
-                timeout=120,
-            )
-
-            response.raise_for_status()
-
-        except requests.exceptions.RequestException as e:
-            raise RuntimeError(
-                f"OpenRouter request failed: {e}"
-            ) from e
-
-        # -----------------------------------------------
-        # Parse response
-        # -----------------------------------------------
-
-        try:
-            result = response.json()
-
-            content = (
+            return (
                 result["choices"][0]
                 ["message"]["content"]
+                .strip()
             )
-
-            if not content:
-                raise RuntimeError(
-                    "OpenRouter returned an empty response."
-                )
-
-            return content.strip()
 
         except (
             KeyError,
             IndexError,
             TypeError,
-            ValueError,
-        ) as e:
+        ):
 
             raise RuntimeError(
                 "Unexpected response from hosted LLM: "
-                f"{response.text}"
-            ) from e
+                f"{result}"
+            )
