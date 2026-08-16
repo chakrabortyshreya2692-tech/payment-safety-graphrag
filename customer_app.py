@@ -710,7 +710,7 @@ if submitted:
             fallback_used = True
 
            # Temporary debugging information
-           st.warning(
+            st.warning(
              "The LLM generated a response, but it did not "
              "pass the evidence validation check."
            )
