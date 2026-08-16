@@ -692,20 +692,20 @@ if submitted:
             # ---------------------------------------------
 
           if validation.get(
-    "accepted",
-    False,
-):
+                "accepted",
+                False,
+          ):
 
-    final_guidance = raw_guidance
-    fallback_used = False
+                final_guidance = raw_guidance
+                fallback_used = False
 
-else:
+          else:
 
-    final_guidance = (
-        deterministic_customer_audience_fallback(
-            risk_result
-        )
-    )
+                final_guidance = (
+                    deterministic_customer_audience_fallback(
+                        risk_result
+                    )
+                )
 
     fallback_used = True
 
