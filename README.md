@@ -27,7 +27,7 @@ The demo allows a user to:
 ## Source Code
 
 **Repository URL:**  
-`<ADD-YOUR-GITHUB-REPOSITORY-URL-HERE>`
+`https://github.com/chakrabortyshreya2692-tech/payment-safety-graphrag/`
 
 ## System Architecture
 
