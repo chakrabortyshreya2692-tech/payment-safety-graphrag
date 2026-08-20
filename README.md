@@ -29,12 +29,6 @@ The demo allows a user to:
 **Repository URL:**  
 `<ADD-YOUR-GITHUB-REPOSITORY-URL-HERE>`
 
-Recommended final dissertation release/tag:
-
-`v1.0-dissertation-submission`
-
----
-
 ## System Architecture
 
 ```text
