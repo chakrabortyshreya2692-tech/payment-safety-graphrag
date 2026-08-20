@@ -185,7 +185,7 @@ A repeated-question consistency experiment can be performed using the fixed mode
 
 ## Data
 
-The prototype uses synthetic payment transaction data for research and evaluation. Data preprocessing, mapping, imputation, and dataset integration procedures are documented separately in the dissertation and auxiliary materials.
+The prototype uses synthetic payment transaction datasets from Kaggle and central bank of Ireland dates for research and evaluation. Data preprocessing, mapping, imputation, and dataset integration procedures are documented separately in the dissertation and auxiliary materials.
 
 ---
 
@@ -210,15 +210,6 @@ This software is a research prototype developed for academic evaluation.
 
 It is **not a production financial decision system** and should not be used as the sole basis for approving, rejecting, or blocking real financial transactions.
 
----
-
-## Reproducibility
-
-Preserve the final dissertation implementation as a tagged GitHub release:
-
-`v1.0-dissertation-submission`
-
-The tagged version should correspond to the implementation used to generate the results reported in the dissertation.
 
 ---
 
