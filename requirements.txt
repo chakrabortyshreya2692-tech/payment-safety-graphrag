@@ -4,4 +4,5 @@ networkx
 matplotlib
 requests
 python-dotenv
-
+pandas
+numpy
