@@ -35,7 +35,7 @@ customer_app.py
 neo4j_fraud_service.py
 neo4j_risk_engine.py
 customer_guidance.py
-local_llm.py
+hosted_llm.py
 requirements.txt
 README.md
 .gitignore
