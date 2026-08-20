@@ -158,8 +158,8 @@ Do not commit real credentials to GitHub.
 ## Running Locally
 
 ```bash
-git clone <YOUR-GITHUB-REPOSITORY-URL>
-cd <YOUR-REPOSITORY-NAME>
+git clone https://github.com/chakrabortyshreya2692-tech/payment-safety-graphrag/
+cd payment-safety-graphrag/
 pip install -r requirements.txt
 streamlit run customer_app.py
 ```
